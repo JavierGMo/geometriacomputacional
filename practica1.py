@@ -20,20 +20,14 @@ def mapBranch(objGraph):
     G = objGraph
     Gtemp = copy.deepcopy(G)
     Gnew = nx.Graph()
-    
-    # print(G.nodes(data=True))
-    print(Gtemp.nodes(data=True))
 
     for graph in Gtemp:
         for tmp in Gtemp:
             # print(Gtemp.nodes[graph]['colorN'])
             if Gtemp.nodes[tmp]['colorN'] != Gtemp.nodes[graph]['colorN']:
-                # Gnew.add_edge('{}'.format(graph), '{}'.format(tmp))
-                G.add_edge('{}'.format(graph), '{}'.format(tmp))
-        # print(Gtemp.nodes[graph])
-    print('Node gnew')
-    print(Gnew.nodes(data=True))
-    return [Gnew, Gtemp]
+                Gnew.add_edge('{}'.format(graph), '{}'.format(tmp))
+                # G.add_edge('{}'.format(graph), '{}'.format(tmp))
+    return (Gnew, Gtemp)
 
 def mapNode():
     Gtemp = nx.Graph()
@@ -65,17 +59,11 @@ def mapNode():
             # print(number)
             Gtemp.add_node(number)
             Gtemp.nodes[number]['colorN'] = colorsMap[countColors]
-            print('Count colors: {}, Color : {},iterator {}'.format(countColors, colorsMap[countColors], iterNumber))
-            # print(colorsMap[countColors])
-            # print(countColors)
+            # print('Count colors: {}, Color : {},iterator {}'.format(countColors, colorsMap[countColors], iterNumber))
             countColors = 0 if (countColors == 3) else incrementCounter(countColors)
 
     #Asignacion de ramas para cualquier caso mayor igual a 4
-
-    # print(Gtemp.nodes(data=True))
-    # print(Gtemp.nodes[0])
     return Gtemp
-    #usar un diccionario para saber el numero de nodos que hay
 
 if __name__ == "__main__":
     fig = plt.figure()
@@ -85,55 +73,25 @@ if __name__ == "__main__":
     GAll = mapBranch(Gtemp)
     G = GAll[0]
     Gnodes = GAll[1]
-    print(G)
-    print(G.nodes())
+
     # A = nx.nx_agraph.to_agraph(G)
-
-    posit = nx.planar_layout(G)
-    nx.draw(G, posit, with_labels=True)
-
     resMap = open('cuatrocolores.txt', 'a')
-    resMap.write(G.nodes(data=True).__str__())
+    resMap.write('Resultado de los cuatro colores \n')
+    resMap.write('Nodos del grafo: \n')
+    resMap.write(Gnodes.nodes(data=True).__str__())
+    resMap.write('Cuatro colores \n')
+    resMap.write('\nRamas: \n')
+    for branch in G.edges(data=True):
+        resMap.write('{}\n'.format(branch.__str__()))
+    # resMap.write(G.edges(data=True).__str__())
     resMap.close()
+    try:
+        posit = nx.planar_layout(G)
+        nx.draw(G, posit, with_labels=True)
+        plt.savefig('graph.png')
+    except:
+        resMap = open('errorplanar.txt', 'a')
+        resMap.write('Error en la construccion del grafo, pero se confirma la teoria de los cuatro colores')
+        resMap.close()
 
-
-
-    plt.savefig('graph.png')
-    # fig.draw()
-    # A.layout('dot')
-    # A.draw('graph.png')
-
-
-
-    # G = nx.Graph()
-    # G.add_edges_from([('A', 'AM'), ('R', 'AM')])
-
-
-# Agregamos los nodos; n nodos
-
-#G.add_node('V')
-#G.add_node('R')
-#G.add_node('A')
-#G.add_node('AM')
-
-#agregamos las ramas; a que nodo va el nodo
-'''
-G.add_edge('V', 'R')
-G.add_edges_from([('A', 'AM'), ('R', 'AM')])
-
-#Agregamos los atributos a nodos y las aristas
-
-G.nodes['V']['colorNode'] = 'verde'
-
-# G.edges['V', 'R']['colorN'] = 'rama1'
-
-print(G.nodes(data=True))
-print(G.nodes['V'])
-
-#Generamos la salida
-A = nx.nx_agraph.to_agraph(G)
-A.layout('dot')
-# A.draw('salida2.png')
-
-# print(G.nodes)
-'''
+    
